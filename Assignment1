@@ -1,0 +1,163 @@
+1. Download vechile sales data -> https://github.com/shashank-mishra219/Hive-Class/blob/main/sales_order_data.csv
+
+2. Store raw data into hdfs location
+
+[cloudera@quickstart ~]$ hadoop fs -copyFromLocal data_hive_class/sales_order_data.csv /data_hive_forhdfs1
+
+[cloudera@quickstart ~]$ hadoop fs -ls /data_hive_forhdfs1
+Found 1 items
+-rw-r--r--   1 cloudera supergroup     360233 2022-10-14 11:57 
+/data_hive_forhdfs1/sales_order_data.csv
+
+3. Create a internal hive table "sales_order_csv" which will store csv data sales_order_csv .. make sure to skip header row while creating table
+hive> create table sales_order_csv
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > PRICEEACH string,
+    > ORDERLINENUMBER int,
+    > SALES float,
+    > STATUS string,
+    > QTR_ID int,
+    > MONTH_ID int,
+    > YEAR_ID int,
+    >
+    > PRODUCTLINE string,
+    > MSRP int,
+    > PRODUCTCODE string,
+    > PHONE string,
+    > CITY string,
+    > STATE string,
+    > POSTALCODE string,
+    > COUNTRY string,
+    > TERRITORY string,
+    > CONTACTLASTNAME string,
+    > CONTACTFIRSTNAME string,
+    > DEALSIZE string )
+    > row format delimited
+    > fields terminated by ','
+    > TBLPROPERTIES("skip.header.line.count"="1");
+OK
+Time taken: 4.131 seconds
+------------------------
+
+hive> describe sales_order_csv;
+OK
+ordernumber             int
+quantityordered         int
+priceeach               string
+orderlinenumber         int
+sales                   float
+status                  string
+qtr_id                  int
+month_id                int
+year_id                 int
+productline             string
+msrp                    int
+productcode             string
+phone                   string
+city                    string
+state                   string
+postalcode              string
+country                 string
+territory               string
+contactlastname         string
+contactfirstname        string
+dealsize                string
+Time taken: 0.263 seconds, Fetched: 21 row(s)
+-----------------------------
+
+hive> describe formatted sales_order_csv;
+OK
+# col_name              data_type               comment
+
+ordernumber             int
+quantityordered         int
+priceeach               string
+orderlinenumber         int
+sales                   float
+status                  string
+qtr_id                  int
+month_id                int
+year_id                 int
+productline             string
+msrp                    int
+productcode             string
+phone                   string
+city                    string
+state                   string
+postalcode              string
+country                 string
+territory               string
+contactlastname         string
+contactfirstname        string
+dealsize                string
+
+# Detailed Table Information
+Database:               hive_class_b1
+Owner:                  cloudera
+CreateTime:             Fri Oct 14 13:00:36 PDT 2022
+LastAccessTime:         UNKNOWN
+Protect Mode:           None
+Retention:              0
+Location:               hdfs://quickstart.cloudera:8020/user/hive/warehouse/hive_class_b1.db/sal                                       es_order_csv
+Table Type:             MANAGED_TABLE
+Table Parameters:
+        skip.header.line.count  1
+        transient_lastDdlTime   1665777636
+
+# Storage Information
+SerDe Library:          org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+InputFormat:            org.apache.hadoop.mapred.TextInputFormat
+OutputFormat:           org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+Compressed:             No
+Num Buckets:            -1
+Bucket Columns:         []
+Sort Columns:           []
+Storage Desc Params:
+        field.delim             ,
+        serialization.format    ,
+
+
+4. Load data from hdfs path into "sales_order_csv" 
+
+hive> load data inpath '/data_hive_forhdfs1/sales_order_data.csv' into table sales_order_csv;
+Loading data to table hive_class_b1.sales_order_csv
+Table hive_class_b1.sales_order_csv stats: [numFiles=1, totalSize=360233]
+OK
+
+---------------------
+
+
+hive> set hive.cli.print.header = true;
+hive> select * from sales_order_csv limit 10;
+OK
+
+sales_order_csv.ordernumber     sales_order_csv.quantityordered sales_order_csv.priceeach      s                                       ales_order_csv.orderlinenumber  sales_order_csv.sales   sales_order_csv.status  sales_order_csv.                                       qtr_id  sales_order_csv.month_id        sales_order_csv.year_id sales_order_csv.productline    s                                       ales_order_csv.msrp     sales_order_csv.productcode     sales_order_csv.phone   sales_order_csv.                                       city    sales_order_csv.state   sales_order_csv.postalcode      sales_order_csv.country sales_or                                       der_csv.territory       sales_order_csv.contactlastname sales_order_csv.contactfirstname       s                                       ales_order_csv.dealsize
+10107   30      95.7    2       2871.0  Shipped 1       2       2003    Motorcycles     95     S                                       10_1678 2125557818      NYC     NY      10022   USA     NA      Yu      Kwai    Small
+10121   34      81.35   5       2765.9  Shipped 2       5       2003    Motorcycles     95     S                                       10_1678 26.47.1555      Reims           51100   France  EMEA    Henriot Paul    Small
+10134   41      94.74   2       3884.34 Shipped 3       7       2003    Motorcycles     95     S                                       10_1678 +33 1 46 62 7555        Paris           75508   France  EMEA    Da Cunha        Daniel M                                       edium
+10145   45      83.26   6       3746.7  Shipped 3       8       2003    Motorcycles     95     S                                       10_1678 6265557265      Pasadena        CA      90003   USA     NA      Young   Julie   Medium
+10159   49      100     14      5205.27 Shipped 4       10      2003    Motorcycles     95     S                                       10_1678 6505551386      San Francisco   CA              USA     NA      Brown   Julie   Medium
+10168   36      96.66   1       3479.76 Shipped 4       10      2003    Motorcycles     95     S                                       10_1678 6505556809      Burlingame      CA      94217   USA     NA      Hirano  Juri    Medium
+10180   29      86.13   9       2497.77 Shipped 4       11      2003    Motorcycles     95     S                                       10_1678 20.16.1555      Lille           59000   France  EMEA    Rance   Martine Small
+10188   48      100     1       5512.32 Shipped 4       11      2003    Motorcycles     95     S                                       10_1678 +47 2267 3215   Bergen          N 5804  Norway  EMEA    Oeztan  Veysel  Medium
+10201   22      98.57   2       2168.54 Shipped 4       12      2003    Motorcycles     95     S                                       10_1678 6505555787      San Francisco   CA              USA     NA      Murphy  Julie   Small
+10211   41      100     14      4708.44 Shipped 1       1       2004    Motorcycles     95     S                                       10_1678 (1) 47.55.6555  Paris           75016   France  EMEA    Perrier Dominique       Medium
+Time taken: 0.165 seconds, Fetched: 10 row(s)
+
+
+5. Create an internal hive table which will store data in ORC format "sales_order_orc"
+
+6. Load data from "sales_order_csv" into "sales_order_orc"
+
+
+Perform below menioned queries on "sales_order_orc" table :
+
+a. Calculatye total sales per year
+b. Find a product for which maximum orders were placed
+c. Calculate the total sales for each quarter
+d. In which quarter sales was minimum
+e. In which country sales was maximum and in which country sales was minimum
+f. Calculate quartelry sales for each city
+h. Find a month for each year in which maximum number of quantities were sold
