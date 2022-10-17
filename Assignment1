@@ -1,4 +1,5 @@
 1. Download vechile sales data -> https://github.com/shashank-mishra219/Hive-Class/blob/main/sales_order_data.csv
+Done
 
 2. Store raw data into hdfs location
 
@@ -8,6 +9,7 @@
 Found 1 items
 -rw-r--r--   1 cloudera supergroup     360233 2022-10-14 11:57 
 /data_hive_forhdfs1/sales_order_data.csv
+===============================================================================================================================================================
 
 3. Create a internal hive table "sales_order_csv" which will store csv data sales_order_csv .. make sure to skip header row while creating table
 hive> create table sales_order_csv
@@ -40,33 +42,6 @@ hive> create table sales_order_csv
 OK
 Time taken: 4.131 seconds
 ------------------------
-
-hive> describe sales_order_csv;
-OK
-ordernumber             int
-quantityordered         int
-priceeach               string
-orderlinenumber         int
-sales                   float
-status                  string
-qtr_id                  int
-month_id                int
-year_id                 int
-productline             string
-msrp                    int
-productcode             string
-phone                   string
-city                    string
-state                   string
-postalcode              string
-country                 string
-territory               string
-contactlastname         string
-contactfirstname        string
-dealsize                string
-Time taken: 0.263 seconds, Fetched: 21 row(s)
------------------------------
-
 hive> describe formatted sales_order_csv;
 OK
 # col_name              data_type               comment
@@ -117,7 +92,7 @@ Sort Columns:           []
 Storage Desc Params:
         field.delim             ,
         serialization.format    ,
-
+=======================================================================================================================================================
 
 4. Load data from hdfs path into "sales_order_csv" 
 
@@ -145,12 +120,95 @@ sales_order_csv.ordernumber     sales_order_csv.quantityordered sales_order_csv.
 10201   22      98.57   2       2168.54 Shipped 4       12      2003    Motorcycles     95     S                                       10_1678 6505555787      San Francisco   CA              USA     NA      Murphy  Julie   Small
 10211   41      100     14      4708.44 Shipped 1       1       2004    Motorcycles     95     S                                       10_1678 (1) 47.55.6555  Paris           75016   France  EMEA    Perrier Dominique       Medium
 Time taken: 0.165 seconds, Fetched: 10 row(s)
+==================================================================================================================================================================
 
 
 5. Create an internal hive table which will store data in ORC format "sales_order_orc"
 
+create table sales_order_data_orc
+(
+ORDERNUMBER int,
+QUANTITYORDERED int,
+PRICEEACH float,
+ORDERLINENUMBER int,
+SALES float,
+STATUS string,
+QTR_ID int,
+MONTH_ID int,
+YEAR_ID int,
+PRODUCTLINE string,
+MSRP int,
+PRODUCTCODE string,
+PHONE string,
+CITY string,
+STATE string,
+POSTALCODE string,
+COUNTRY string,
+TERRITORY string,
+CONTACTLASTNAME string,
+CONTACTFIRSTNAME string,
+DEALSIZE string
+)
+stored as orc;
+===============================================================================================================================================================
+
 6. Load data from "sales_order_csv" into "sales_order_orc"
 
+hive> from sales_order_csv  insert overwrite table sales_order_data_orc select *;
+Query ID = cloudera_20221017111717_6eddc109-93d2-4fbe-94f9-9d67163dcf99
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1666027167965_0001, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1666027167965_0001/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1666027167965_0001
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2022-10-17 11:17:41,041 Stage-1 map = 0%,  reduce = 0%
+2022-10-17 11:17:53,379 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.08 sec
+MapReduce Total cumulative CPU time: 4 seconds 80 msec
+Ended Job = job_1666027167965_0001
+Stage-4 is selected by condition resolver.
+Stage-3 is filtered out by condition resolver.
+Stage-5 is filtered out by condition resolver.
+Moving data to: hdfs://quickstart.cloudera:8020/user/hive/warehouse/hive_class_b1.db/sales_order_data_orc/.hive-staging_hive_2022-10-17_11-17-19_932_7506177851040931063-1/-ext-10000
+Loading data to table hive_class_b1.sales_order_data_orc
+Table hive_class_b1.sales_order_data_orc stats: [numFiles=1, numRows=2823, totalSize=37548, rawDataSize=3153291]
+MapReduce Jobs Launched:
+Stage-Stage-1: Map: 1   Cumulative CPU: 4.08 sec   HDFS Read: 367579 HDFS Write: 37645 SUCCESS
+Total MapReduce CPU Time Spent: 4 seconds 80 msec
+OK
+Time taken: 37.616 seconds
+hive> describe formatted sales_order_data_orc;
+OK
+
+# Detailed Table Information
+Database:               hive_class_b1
+Owner:                  cloudera
+CreateTime:             Fri Oct 14 15:43:01 PDT 2022
+LastAccessTime:         UNKNOWN
+Protect Mode:           None
+Retention:              0
+Location:               hdfs://quickstart.cloudera:8020/user/hive/warehouse/hive_class_b1.db/sales_order_data_orc
+Table Type:             MANAGED_TABLE
+Table Parameters:
+        COLUMN_STATS_ACCURATE   true
+        numFiles                1
+        numRows                 2823
+        rawDataSize             3153291
+        totalSize               37548
+        transient_lastDdlTime   1666030677
+
+# Storage Information
+SerDe Library:          org.apache.hadoop.hive.ql.io.orc.OrcSerde
+InputFormat:            org.apache.hadoop.hive.ql.io.orc.OrcInputFormat
+OutputFormat:           org.apache.hadoop.hive.ql.io.orc.OrcOutputFormat
+Compressed:             No
+Num Buckets:            -1
+Bucket Columns:         []
+Sort Columns:           []
+Storage Desc Params:
+        serialization.format    1
+Time taken: 0.13 seconds, Fetched: 51 row(s)
+===============================================================================================================================================================
 
 Perform below menioned queries on "sales_order_orc" table :
 
