@@ -278,6 +278,39 @@ OK
 Classic Cars    97
 =====================================================================================================================================================
 c. Calculate the total sales for each quarter
+
+hive> select
+    > qtr_id, sum(sales)
+    > from sales_order_data_orc
+    > group by qtr_id;
+Query ID = cloudera_20221017121919_73c2004f-a1a0-43a8-be58-2527c0e07bf8
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1666027167965_0006, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1666027167965_0006/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1666027167965_0006
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2022-10-17 12:19:25,948 Stage-1 map = 0%,  reduce = 0%
+2022-10-17 12:19:33,348 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 3.21 sec
+2022-10-17 12:19:41,765 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 4.99 sec
+MapReduce Total cumulative CPU time: 4 seconds 990 msec
+Ended Job = job_1666027167965_0006
+MapReduce Jobs Launched:
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 4.99 sec   HDFS Read: 37113 HDFS Write: 81 SUCCESS
+Total MapReduce CPU Time Spent: 4 seconds 990 msec
+OK
+1       2350817.726501465
+2       2048120.3029174805
+3       1758910.808959961
+4       3874780.010925293
+=======================================================================================================================================================
+
 d. In which quarter sales was minimum
 e. In which country sales was maximum and in which country sales was minimum
 f. Calculate quartelry sales for each city
